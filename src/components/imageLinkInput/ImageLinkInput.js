@@ -4,7 +4,7 @@ import './ImageLinkInput.css';
 const ImageLinkInput = () => {
   return (
     <div>
-      <p className="f3">
+      <p className="white f3">
         {"This Magic App will detect faces in your pictures. Give it a try."}
       </p>
       <div className="center"> 

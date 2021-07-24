@@ -6,7 +6,7 @@ yellow: #ffe608
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: 'Courier New', Courier, monospace;
   background: linear-gradient(89deg, #00e7fc 0%, #ea00ff 50%, #ffe608 100%);
 }
 
