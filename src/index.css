@@ -1,0 +1,15 @@
+/* 
+blue: #00e7fc
+pink: #ea00ff
+yellow: #ffe608
+*/
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background: linear-gradient(89deg, #00e7fc 0%, #ea00ff 50%, #ffe608 100%);
+}
+
+button {
+  cursor: pointer;
+}
