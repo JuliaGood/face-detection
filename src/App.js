@@ -32,8 +32,29 @@ class App extends Component {
     super();
     this.state = {
       userInput: '',
-      imageUrl: ''
+      imageUrl: '',
+      box: {} //point coordinates that we`ve received from response (in the boundingBox)
     }
+  }
+
+  calculateFaceLocation = (receivedData) => { //receivedData = that we`ve received from Clarifai`s response: boundingBox for now
+    const boundingBox = receivedData.outputs[0].data.regions[0].region_info.bounding_box;
+    console.log('boundingBox: ', boundingBox);
+    const inputImage = document.getElementById('inputImage');
+    const imageWidth = Number(inputImage.width);
+    const imageHeight = Number(inputImage.height);
+    console.log('width and hight of inputImage: ', imageWidth, imageHeight);
+    return { // the point coordinates = dots of boundingBox
+      bottomRow: imageHeight - (boundingBox.bottom_row * imageHeight), //1
+      leftCol: boundingBox.left_col * imageWidth, //2
+      rightCol: imageWidth - (boundingBox.right_col * imageWidth), //3
+      topRow: boundingBox.top_row * imageHeight, // 4
+    }
+  }
+
+  displayFaceLocation = (boxDots) => {
+    console.log('boxDots returned from calculateFaceLocation: ', boxDots);
+    this.setState({ box: boxDots });
   }
 
   onInputChange = (event) => {
@@ -49,16 +70,11 @@ class App extends Component {
       Clarifai.FACE_DETECT_MODEL, //As the firts parameter we say it WHAT model do we want to use. Clarifai provides this model. 
       this.state.userInput) //the second parameter must be img-url
       // why userInput, not imageUrl? - its because of the way HOW 'setState' works. 
-    .then(
-      function(response) {
-        console.log('clarifai`s response: ', response);
-        let boundingBox = response.outputs[0].data.regions[0].region_info.bounding_box;
-        console.log('boundingBox: ', boundingBox);
-      },
-      function(error) {
-        //do smth with error
-      }
-    );
+    .then((response) => {
+      console.log('clarifai`s response: ', response);
+      this.displayFaceLocation(this.calculateFaceLocation(response));
+    })
+    .catch ((error) => console.log(error))
   }
 
   render() {
@@ -70,7 +86,10 @@ class App extends Component {
           onInputChange={this.onInputChange}
           onDetectSubmit={this.onDetectSubmit}
         />
-        <FaceDetection imageUrl={this.state.imageUrl}/>
+        <FaceDetection 
+          imageUrl={this.state.imageUrl}
+          box={this.state.box}
+        />
       </div>
     );
   }

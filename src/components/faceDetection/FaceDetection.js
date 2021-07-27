@@ -2,16 +2,22 @@ import React from 'react';
 import './FaceDetection.css';
 
 const FaceDetection = (props) => { 
-  const { imageUrl } = props;
+  const { imageUrl, box } = props;
+  console.log('box props in FaceDetection component: ', box);
   return (
     <div className="center">
-      <div className="absolute pa4">
-      <img 
-        src={imageUrl} 
-        alt='face-detection'
-        width='550px'
-        height='auto'
-      />
+      <div className="absolute ma4">
+        <img 
+          id='inputImage'
+          src={imageUrl} 
+          alt='face-detection'
+          width='500px'
+          height='auto'
+        />
+        <div 
+          className='bounding-box-style'
+          style={{ top: box.topRow, right: box.rightCol, bottom: box.bottomRow, left: box.leftCol }}
+        ></div>
       </div>
     </div>
   );
