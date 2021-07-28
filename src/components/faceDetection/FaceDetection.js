@@ -10,7 +10,7 @@ const FaceDetection = (props) => {
         <img 
           id='inputImage'
           src={imageUrl} 
-          alt='face-detection'
+          alt='detected-face'
           width='500px'
           height='auto'
         />
