@@ -5,7 +5,7 @@ const ImageLinkInput = (props) => {
   const { onInputChange, onDetectSubmit } = props;
   return (
     <div>
-      <p className="white f3">
+      <p className="black f4">
         {"This Magic App will detect faces in your pictures. Give it a try."}
       </p>
       <div className="center"> 

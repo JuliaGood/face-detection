@@ -6,6 +6,7 @@ import RegisterForm from './components/registerForm/RegisterForm';
 import Logo from './components/logo/Logo';
 import ImageLinkInput from './components/imageLinkInput/ImageLinkInput';
 import FaceDetection from './components/faceDetection/FaceDetection';
+import Rank from './components/rank/Rank';
 import Particles from "react-particles-js";
 const Clarifai = require('clarifai'); //clarifai is using common js ES5
 // but we can use 'import-from' ES6 because we use 'create-reat-app'
@@ -102,6 +103,7 @@ class App extends Component {
         { this.state.route ==='home' 
           ? <div>
               <Logo/>
+              <Rank/>
               <ImageLinkInput 
                 onInputChange={this.onInputChange}
                 onDetectSubmit={this.onDetectSubmit}
