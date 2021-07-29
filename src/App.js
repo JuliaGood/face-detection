@@ -39,7 +39,12 @@ class App extends Component {
       imageUrl: '',
       box: {}, //point coordinates that we`ve received from response (in the boundingBox)
       route: 'signin',
-      isUserSignedIn: false
+      isUserSignedIn: false,
+      registeredUsers: [], //storage of USERS {name, email, password}
+      currentUser:{}, //signIned = logged user
+      name: '',
+      email: '', 
+      password: ''
     }
   }
 
@@ -63,7 +68,7 @@ class App extends Component {
     this.setState({ box: boxDots });
   }
 
-  onInputChange = (event) => {
+  onInputChange = (event) => { //user`s input of image Url
     let inputValue = event.target.value
     console.log('user`s inputValue: ', inputValue)
     this.setState({userInput: inputValue});
@@ -92,6 +97,45 @@ class App extends Component {
     this.setState({ route: ourRoute });
   }
 
+  //forms
+  onInputFormChange = (event) => {
+    const inputName = event.target.name; // name, email, password
+    const inputValue = event.target.value;
+    this.setState({ [inputName]: inputValue }); 
+  }
+  onRegisterSubmit = () => {
+    const newUser = {
+      name: this.state.name,
+      email: this.state.email,
+      password: this.state.password
+    }
+    const isUserExisted = this.state.registeredUsers.find((user) => newUser.email === user.email);
+    if(isUserExisted) {
+      alert('this email already exists!')
+    } else if (newUser.name.length < 3 || newUser.email.length < 3 || newUser.password.length < 3) {
+      alert('all inputs must have 3 or more characters')
+    } else {
+      this.setState({registeredUsers: [...this.state.registeredUsers, newUser ]}, ()=> {
+        console.log('state after onRegisterSubmit: ', this.state);
+        this.setState({name:'', email:'', password:''});
+        this.onRouteChange('signin');
+      });
+    }    
+  }
+
+  onSigninSubmit = () => {
+    const { email, password } = this.state;
+    const foundUser = this.state.registeredUsers.find((user) => email === user.email);
+    if(foundUser && password === foundUser.password) {
+      this.setState({currentUser: foundUser}, ()=> {
+        this.setState({ email:'', password:''});
+        this.onRouteChange('home');
+      })
+    } else {
+      alert('Wrong email or password!')
+    }
+  }
+
   render() {
     return (
       <div className="App">
@@ -103,7 +147,7 @@ class App extends Component {
         { this.state.route ==='home' 
           ? <div>
               <Logo/>
-              <Rank/>
+              <Rank currentUser={this.state.currentUser}/>
               <ImageLinkInput 
                 onInputChange={this.onInputChange}
                 onDetectSubmit={this.onDetectSubmit}
@@ -114,8 +158,16 @@ class App extends Component {
               />
             </div>
           : ( this.state.route ==='signin'
-              ? <SignInForm onRouteChange={this.onRouteChange}/> 
-              : <RegisterForm onRouteChange={this.onRouteChange}/>
+              ? <SignInForm 
+                onRouteChange={this.onRouteChange}
+                onSigninSubmit={this.onSigninSubmit}
+                onInputFormChange={this.onInputFormChange}
+              /> 
+              : <RegisterForm 
+                onRouteChange={this.onRouteChange} 
+                onRegisterSubmit={this.onRegisterSubmit}
+                onInputFormChange={this.onInputFormChange}
+              />
             )
         }
       </div>

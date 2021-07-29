@@ -1,11 +1,12 @@
 import React from 'react';
 import './Rank.css';
 
-const Rank = () => {
+const Rank = (props) => {
+  const {currentUser} = props;
   return (
     <div>
       <p className="white f3">
-        {`username, your current rank is #number`}
+        {`${currentUser.name}, your current rank is #number`}
       </p>
     </div>
   );
