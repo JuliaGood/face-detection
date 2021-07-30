@@ -40,17 +40,21 @@ class App extends Component {
       boxes: [], //point coordinates that we`ve received from response (in the boundingBox)
       route: 'register',
       isUserSignedIn: false,
-      registeredUsers: [], //storage of USERS {name, email, password}
       currentUser:{}, //signIned = logged user
       name: '',
-      email: '', //name, email, pasword for FROM
+      email: '', //name, email, pasword for FORM-inputs
       password: '',
       currentCount: 0, // how many faces have been detected in the img
     }
   }
 
+  getRegisteredUser = () => {
+    return localStorage.getItem('registeredUsers') 
+    ? JSON.parse(localStorage.getItem('registeredUsers'))
+    : [];
+  }
+
   calculateFaceLocation = (receivedData) => { //receivedData = that we`ve received from Clarifai`s response: boundingBox for now
-    //const boundingBox = receivedData.outputs[0].data.regions[0].region_info.bounding_box;
     const inputImage = document.getElementById('inputImage');
     const imageWidth = Number(inputImage.width);
     const imageHeight = Number(inputImage.height);
@@ -67,10 +71,10 @@ class App extends Component {
     return boundingBoxes;
   }
 
-  displayFaceLocation = (boxesDots) => {
-    const updateRegUsers = this.state.registeredUsers.map((user) => { 
+  displayFaceLocation = (boxesDots) => { // boxesDots = boundingBoxes
+    const updateRegUsers = this.getRegisteredUser().map((user) => { 
       if (user.email === this.state.currentUser.email) {
-        user.totalCount = user.totalCount + 1;
+        user.totalCount = user.totalCount + boxesDots.length;
       }
       return user;
     });
@@ -78,10 +82,11 @@ class App extends Component {
     this.setState((prevState) => ({ 
       // prevState = this.state (currentState)
       boxes: boxesDots, 
-      currentCount: prevState.currentCount + 1,
-      registeredUsers: updateRegUsers,
-      currentUser: {...prevState.currentUser, totalCount : prevState.currentUser.totalCount + 1}
-    }));
+      currentCount: prevState.currentCount + boxesDots.length,
+      currentUser: {...prevState.currentUser, totalCount : prevState.currentUser.totalCount + boxesDots.length}
+    }), () => {
+      localStorage.setItem('registeredUsers', JSON.stringify(updateRegUsers));
+    });
   }
 
   onInputChange = (event) => { //user`s input of image Url
@@ -106,7 +111,7 @@ class App extends Component {
 
   onRouteChange = (ourRoute) => {
     if(ourRoute === 'signout') {
-      this.setState({ isUserSignedIn: false, imageUrl: '', box:{}, currentCount: 0 })
+      this.setState({ isUserSignedIn: false, imageUrl: '', boxes:[], currentCount: 0 })
     } else if(ourRoute === 'home') {
       this.setState({isUserSignedIn: true})
     }
@@ -126,23 +131,22 @@ class App extends Component {
       password: this.state.password,
       totalCount: 0, // total amount of detected faces for all time
     }
-    const isUserExisted = this.state.registeredUsers.find((user) => newUser.email === user.email);
+    const registeredUsers = this.getRegisteredUser();
+    const isUserExisted = registeredUsers.find((user) => newUser.email === user.email);
     if(isUserExisted) {
       alert('this email already exists!')
     } else if (newUser.name.length < 3 || newUser.email.length < 3 || newUser.password.length < 3) {
       alert('all inputs must have 3 or more characters')
     } else {
-      this.setState({registeredUsers: [...this.state.registeredUsers, newUser ]}, ()=> {
-        console.log('state after onRegisterSubmit: ', this.state);
-        this.setState({name:'', email:'', password:''});
-        this.onRouteChange('signin');
-      });
+      localStorage.setItem('registeredUsers', JSON.stringify([...registeredUsers, newUser ]))
+      this.setState({name:'', email:'', password:''});
+      this.onRouteChange('signin');
     }    
   }
 
   onSigninSubmit = () => {
     const { email, password } = this.state;
-    const foundUser = this.state.registeredUsers.find((user) => email === user.email);
+    const foundUser = this.getRegisteredUser().find((user) => email === user.email);
     if(foundUser && password === foundUser.password) {
       this.setState({currentUser: {...foundUser}}, ()=> {
         this.setState({ email:'', password:''});
