@@ -37,8 +37,8 @@ class App extends Component {
     this.state = {
       userInput: '',
       imageUrl: '',
-      box: {}, //point coordinates that we`ve received from response (in the boundingBox)
-      route: 'signin',
+      boxes: [], //point coordinates that we`ve received from response (in the boundingBox)
+      route: 'register',
       isUserSignedIn: false,
       registeredUsers: [], //storage of USERS {name, email, password}
       currentUser:{}, //signIned = logged user
@@ -50,22 +50,24 @@ class App extends Component {
   }
 
   calculateFaceLocation = (receivedData) => { //receivedData = that we`ve received from Clarifai`s response: boundingBox for now
-    const boundingBox = receivedData.outputs[0].data.regions[0].region_info.bounding_box;
-    console.log('boundingBox: ', boundingBox);
+    //const boundingBox = receivedData.outputs[0].data.regions[0].region_info.bounding_box;
     const inputImage = document.getElementById('inputImage');
     const imageWidth = Number(inputImage.width);
     const imageHeight = Number(inputImage.height);
-    console.log('width and hight of inputImage: ', imageWidth, imageHeight);
-    return { // the point coordinates = dots of boundingBox
-      bottomRow: imageHeight - (boundingBox.bottom_row * imageHeight), //1
-      leftCol: boundingBox.left_col * imageWidth, //2
-      rightCol: imageWidth - (boundingBox.right_col * imageWidth), //3
-      topRow: boundingBox.top_row * imageHeight, // 4
-    }
+
+    const boundingBoxes = receivedData.outputs[0].data.regions.map((region) => {
+      const boundingBox = region.region_info.bounding_box;
+      return { // the point coordinates = dots of boundingBox
+        bottomRow: imageHeight - (boundingBox.bottom_row * imageHeight), //1
+        leftCol: boundingBox.left_col * imageWidth, //2
+        rightCol: imageWidth - (boundingBox.right_col * imageWidth), //3
+        topRow: boundingBox.top_row * imageHeight, // 4
+      }
+    })
+    return boundingBoxes;
   }
 
-  displayFaceLocation = (boxDots) => {
-    console.log('boxDots returned from calculateFaceLocation: ', boxDots);
+  displayFaceLocation = (boxesDots) => {
     const updateRegUsers = this.state.registeredUsers.map((user) => { 
       if (user.email === this.state.currentUser.email) {
         user.totalCount = user.totalCount + 1;
@@ -75,7 +77,7 @@ class App extends Component {
     
     this.setState((prevState) => ({ 
       // prevState = this.state (currentState)
-      box: boxDots, 
+      boxes: boxesDots, 
       currentCount: prevState.currentCount + 1,
       registeredUsers: updateRegUsers,
       currentUser: {...prevState.currentUser, totalCount : prevState.currentUser.totalCount + 1}
@@ -172,7 +174,7 @@ class App extends Component {
               />
               <FaceDetection 
                 imageUrl={this.state.imageUrl}
-                box={this.state.box}
+                boxes={this.state.boxes}
               />
             </div>
           : ( this.state.route ==='signin'
