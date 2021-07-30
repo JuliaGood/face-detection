@@ -43,8 +43,9 @@ class App extends Component {
       registeredUsers: [], //storage of USERS {name, email, password}
       currentUser:{}, //signIned = logged user
       name: '',
-      email: '', 
-      password: ''
+      email: '', //name, email, pasword for FROM
+      password: '',
+      currentCount: 0, // how many faces have been detected in the img
     }
   }
 
@@ -65,7 +66,20 @@ class App extends Component {
 
   displayFaceLocation = (boxDots) => {
     console.log('boxDots returned from calculateFaceLocation: ', boxDots);
-    this.setState({ box: boxDots });
+    const updateRegUsers = this.state.registeredUsers.map((user) => { 
+      if (user.email === this.state.currentUser.email) {
+        user.totalCount = user.totalCount + 1;
+      }
+      return user;
+    });
+    
+    this.setState((prevState) => ({ 
+      // prevState = this.state (currentState)
+      box: boxDots, 
+      currentCount: prevState.currentCount + 1,
+      registeredUsers: updateRegUsers,
+      currentUser: {...prevState.currentUser, totalCount : prevState.currentUser.totalCount + 1}
+    }));
   }
 
   onInputChange = (event) => { //user`s input of image Url
@@ -76,7 +90,7 @@ class App extends Component {
 
   onDetectSubmit = () => {
     console.log('detect btn has cliked');
-    this.setState({imageUrl: this.state.userInput});
+    this.setState({imageUrl: this.state.userInput, currentCount: 0 });
     app.models.predict(
       Clarifai.FACE_DETECT_MODEL, //As the firts parameter we say it WHAT model do we want to use. Clarifai provides this model. 
       this.state.userInput) //the second parameter must be img-url
@@ -90,7 +104,7 @@ class App extends Component {
 
   onRouteChange = (ourRoute) => {
     if(ourRoute === 'signout') {
-      this.setState({ isUserSignedIn: false})
+      this.setState({ isUserSignedIn: false, imageUrl: '', box:{}, currentCount: 0 })
     } else if(ourRoute === 'home') {
       this.setState({isUserSignedIn: true})
     }
@@ -107,7 +121,8 @@ class App extends Component {
     const newUser = {
       name: this.state.name,
       email: this.state.email,
-      password: this.state.password
+      password: this.state.password,
+      totalCount: 0, // total amount of detected faces for all time
     }
     const isUserExisted = this.state.registeredUsers.find((user) => newUser.email === user.email);
     if(isUserExisted) {
@@ -127,7 +142,7 @@ class App extends Component {
     const { email, password } = this.state;
     const foundUser = this.state.registeredUsers.find((user) => email === user.email);
     if(foundUser && password === foundUser.password) {
-      this.setState({currentUser: foundUser}, ()=> {
+      this.setState({currentUser: {...foundUser}}, ()=> {
         this.setState({ email:'', password:''});
         this.onRouteChange('home');
       })
@@ -147,7 +162,10 @@ class App extends Component {
         { this.state.route ==='home' 
           ? <div>
               <Logo/>
-              <Rank currentUser={this.state.currentUser}/>
+              <Rank 
+                currentUser={this.state.currentUser} 
+                currentCount={this.state.currentCount} 
+              />
               <ImageLinkInput 
                 onInputChange={this.onInputChange}
                 onDetectSubmit={this.onDetectSubmit}
