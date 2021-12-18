@@ -1,14 +1,14 @@
-import React, {Component} from 'react';
-import './App.css';
-import Navigation from './components/navigation/Navigation';
-import SignInForm from './components/signInForm/SignInForm';
-import RegisterForm from './components/registerForm/RegisterForm';
-import Logo from './components/logo/Logo';
-import ImageLinkInput from './components/imageLinkInput/ImageLinkInput';
-import FaceDetection from './components/faceDetection/FaceDetection';
-import Rank from './components/rank/Rank';
+import React, { Component } from "react";
+import "./App.css";
+import Navigation from "./components/navigation/Navigation";
+import Logo from "./components/logo/Logo";
+import SignInForm from "./components/signInForm/SignInForm";
+import RegisterForm from "./components/registerForm/RegisterForm";
+import Rank from "./components/rank/Rank";
+import ImageLinkInput from "./components/imageLinkInput/ImageLinkInput";
+import FaceDetection from "./components/faceDetection/FaceDetection";
 import Particles from "react-particles-js";
-const Clarifai = require('clarifai'); //clarifai is using common js ES5
+const Clarifai = require("clarifai"); //clarifai uses common js ES5
 // but we can use 'import-from' ES6 because we use 'create-reat-app'
 // import Clarifai from 'clarifai';
 
@@ -28,7 +28,7 @@ const particlesOptions = {
 };
 
 const app = new Clarifai.App({
-  apiKey: 'a57180e7e2914b3586f31b7e92ae4149' // my API key
+  apiKey: "a57180e7e2914b3586f31b7e92ae4149"
  });
 
 class App extends Component {
@@ -49,13 +49,13 @@ class App extends Component {
   }
 
   getRegisteredUser = () => {
-    return localStorage.getItem('registeredUsers') 
-    ? JSON.parse(localStorage.getItem('registeredUsers'))
+    return localStorage.getItem("registeredUsers") 
+    ? JSON.parse(localStorage.getItem("registeredUsers"))
     : [];
   }
 
   calculateFaceLocation = (receivedData) => { //receivedData = that we`ve received from Clarifai`s response: boundingBox for now
-    const inputImage = document.getElementById('inputImage');
+    const inputImage = document.getElementById("inputImage");
     const imageWidth = Number(inputImage.width);
     const imageHeight = Number(inputImage.height);
 
@@ -85,35 +85,35 @@ class App extends Component {
       currentCount: prevState.currentCount + boxesDots.length,
       currentUser: {...prevState.currentUser, totalCount : prevState.currentUser.totalCount + boxesDots.length}
     }), () => {
-      localStorage.setItem('registeredUsers', JSON.stringify(updateRegUsers));
+      localStorage.setItem("registeredUsers", JSON.stringify(updateRegUsers));
     });
   }
 
-  onInputChange = (event) => { //user`s input of image Url
+  onInputChange = (event) => { //user`s input, image Url
     let inputValue = event.target.value
-    console.log('user`s inputValue: ', inputValue)
-    this.setState({userInput: inputValue});
+    console.log("user`s inputValue: ", inputValue)
+    this.setState({ userInput: inputValue });
   }
 
   onDetectSubmit = () => {
-    console.log('detect btn has cliked');
-    this.setState({imageUrl: this.state.userInput, currentCount: 0 });
+    console.log("detect btn has cliked");
+    this.setState({ imageUrl: this.state.userInput, currentCount: 0 });
     app.models.predict(
       Clarifai.FACE_DETECT_MODEL, //As the firts parameter we say it WHAT model do we want to use. Clarifai provides this model. 
       this.state.userInput) //the second parameter must be img-url
       // why userInput, not imageUrl? - its because of the way HOW 'setState' works. 
     .then((response) => {
-      console.log('clarifai`s response: ', response);
+      console.log("clarifai`s response: ", response);
       this.displayFaceLocation(this.calculateFaceLocation(response));
     })
     .catch ((error) => console.log(error))
   }
 
   onRouteChange = (ourRoute) => {
-    if(ourRoute === 'signout') {
+    if (ourRoute === "signout") {
       this.setState({ isUserSignedIn: false, imageUrl: '', boxes:[], currentCount: 0 })
-    } else if(ourRoute === 'home') {
-      this.setState({isUserSignedIn: true})
+    } else if (ourRoute === "home") {
+      this.setState({ isUserSignedIn: true })
     }
     this.setState({ route: ourRoute });
   }
@@ -124,6 +124,7 @@ class App extends Component {
     const inputValue = event.target.value;
     this.setState({ [inputName]: inputValue }); 
   }
+
   onRegisterSubmit = () => {
     const newUser = {
       name: this.state.name,
@@ -133,39 +134,39 @@ class App extends Component {
     }
     const registeredUsers = this.getRegisteredUser();
     const isUserExisted = registeredUsers.find((user) => newUser.email === user.email);
-    if(isUserExisted) {
-      alert('this email already exists!')
+    if (isUserExisted) {
+      alert("this email already exists!")
     } else if (newUser.name.length < 3 || newUser.email.length < 3 || newUser.password.length < 3) {
-      alert('all inputs must have 3 or more characters')
+      alert("all inputs must have 3 or more characters")
     } else {
-      localStorage.setItem('registeredUsers', JSON.stringify([...registeredUsers, newUser ]))
-      this.setState({name:'', email:'', password:''});
-      this.onRouteChange('signin');
+      localStorage.setItem("registeredUsers", JSON.stringify([...registeredUsers, newUser ]))
+      this.setState({ name:'', email:'', password:'' });
+      this.onRouteChange("signin");
     }    
   }
 
   onSigninSubmit = () => {
     const { email, password } = this.state;
     const foundUser = this.getRegisteredUser().find((user) => email === user.email);
-    if(foundUser && password === foundUser.password) {
-      this.setState({currentUser: {...foundUser}}, ()=> {
+    if (foundUser && password === foundUser.password) {
+      this.setState({ currentUser: {...foundUser} }, ()=> {
         this.setState({ email:'', password:''});
-        this.onRouteChange('home');
+        this.onRouteChange("home");
       })
     } else {
-      alert('Wrong email or password!')
+      alert("Wrong email or password!");
     }
   }
 
   render() {
     return (
-      <div className="App">
+      <div className="app">
         <Particles className="particles" params={particlesOptions} />
         <Navigation 
           isUserSignedIn={this.state.isUserSignedIn}
           onRouteChange={this.onRouteChange}
         />
-        { this.state.route ==='home' 
+        { this.state.route === "home" 
           ? <div>
               <Logo/>
               <Rank 
@@ -181,7 +182,7 @@ class App extends Component {
                 boxes={this.state.boxes}
               />
             </div>
-          : ( this.state.route ==='signin'
+          : ( this.state.route === "signin"
               ? <SignInForm 
                 onRouteChange={this.onRouteChange}
                 onSigninSubmit={this.onSigninSubmit}

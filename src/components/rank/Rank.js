@@ -1,9 +1,9 @@
-import React from 'react';
-import './Rank.css';
+import React from "react";
 
 const Rank = (props) => { 
-  const {currentUser, currentCount } = props;
-  console.log('currentCount in Rank ', currentUser);
+  const { currentUser, currentCount } = props;
+  console.log("currentCount in Rank ", currentUser);
+
   return (
     <div>
       <p className="white f3">

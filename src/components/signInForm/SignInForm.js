@@ -1,5 +1,4 @@
-import React from 'react';
-import "./SignInForm.css";
+import React from "react";
 
 const SignInForm = (props) => { 
   const { onRouteChange, onInputFormChange, onSigninSubmit } = props;
@@ -13,14 +12,14 @@ const SignInForm = (props) => {
           <div className="mt3">
             <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
             <input className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" 
-              type="email" name="email"  id="email-address" 
+              type="email" name="email"  id="email-address" autoComplete="off"
               onChange={onInputFormChange}
             />
           </div>
           <div className="mv3">
             <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
             <input className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" 
-              type="password" name="password"  id="password" 
+              type="password" name="password"  id="password" autoComplete="off"
               onChange={onInputFormChange}
             />
           </div>
@@ -30,13 +29,13 @@ const SignInForm = (props) => {
             className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib" 
             type="button" 
             value="Sign in" 
-            onClick={()=> onSigninSubmit()}
+            onClick={() => onSigninSubmit()}
           />
         </div>
         <div className="lh-copy mt3">
           <p 
             className="f6 link dim black db pointer"
-            onClick={()=> onRouteChange('register')}
+            onClick={() => onRouteChange("register")}
           >Register</p>
         </div>
       </form>
