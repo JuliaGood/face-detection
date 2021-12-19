@@ -1,11 +1,13 @@
 import React from "react";
+import Logo from "../logo/Logo";
 import "./Navigation.css";
 
 const Navigation = (props) => { 
   const { onRouteChange, isUserSignedIn } = props;
   if(isUserSignedIn) {
     return (
-      <nav className="nav-style">
+      <nav className="nav-style nav-logo">
+        <Logo/>
         <p 
           className="f3 link dim black pa3 pointer"
           onClick={() => onRouteChange("signout")}

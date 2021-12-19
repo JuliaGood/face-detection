@@ -7,10 +7,10 @@ const Rank = (props) => {
   return (
     <div>
       <p className="white f3">
-        {`${currentUser.name}, your total amount of detected faces is: ${currentUser.totalCount}`} 
+        {`${currentUser.name}, your total number of detected faces is: ${currentUser.totalCount}`} 
       </p>
       <p className="white f3">
-        {`Current amount of detected faces is: ${currentCount}`} 
+        {`There are ${currentCount} faces in the current image.`} 
       </p>
     </div>
   );

@@ -1,16 +1,13 @@
 import React, { Component } from "react";
 import "./App.css";
 import Navigation from "./components/navigation/Navigation";
-import Logo from "./components/logo/Logo";
 import SignInForm from "./components/signInForm/SignInForm";
 import RegisterForm from "./components/registerForm/RegisterForm";
 import Rank from "./components/rank/Rank";
 import ImageLinkInput from "./components/imageLinkInput/ImageLinkInput";
 import FaceDetection from "./components/faceDetection/FaceDetection";
 import Particles from "react-particles-js";
-const Clarifai = require("clarifai"); //clarifai uses common js ES5
-// but we can use 'import-from' ES6 because we use 'create-reat-app'
-// import Clarifai from 'clarifai';
+import Clarifai from "clarifai";
 
 const particlesOptions = {
   particles: {
@@ -168,7 +165,6 @@ class App extends Component {
         />
         { this.state.route === "home" 
           ? <div>
-              <Logo/>
               <Rank 
                 currentUser={this.state.currentUser} 
                 currentCount={this.state.currentCount} 

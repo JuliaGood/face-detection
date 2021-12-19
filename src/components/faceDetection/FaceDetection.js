@@ -12,7 +12,7 @@ const FaceDetection = (props) => {
           id="inputImage"
           src={imageUrl} 
           alt="detected-face"
-          width="500px"
+          width="650px"
           height="auto"
         />
         {boxes.map((box, index) => (
