@@ -1,23 +1,23 @@
 {
   "files": {
-    "main.css": "/static/css/main.05ff9fd3.chunk.css",
-    "main.js": "/static/js/main.1348a3ff.chunk.js",
-    "main.js.map": "/static/js/main.1348a3ff.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.79bb2dd8.js",
-    "runtime-main.js.map": "/static/js/runtime-main.79bb2dd8.js.map",
-    "static/css/2.6d7c7915.chunk.css": "/static/css/2.6d7c7915.chunk.css",
-    "static/js/2.1695d172.chunk.js": "/static/js/2.1695d172.chunk.js",
-    "static/js/2.1695d172.chunk.js.map": "/static/js/2.1695d172.chunk.js.map",
-    "index.html": "/index.html",
-    "static/css/2.6d7c7915.chunk.css.map": "/static/css/2.6d7c7915.chunk.css.map",
-    "static/css/main.05ff9fd3.chunk.css.map": "/static/css/main.05ff9fd3.chunk.css.map",
-    "static/js/2.1695d172.chunk.js.LICENSE.txt": "/static/js/2.1695d172.chunk.js.LICENSE.txt",
-    "static/media/detect-logo.ff1ff15b.png": "/static/media/detect-logo.ff1ff15b.png"
+    "main.css": "/JuliaGood/face-detection/static/css/main.05ff9fd3.chunk.css",
+    "main.js": "/JuliaGood/face-detection/static/js/main.1348a3ff.chunk.js",
+    "main.js.map": "/JuliaGood/face-detection/static/js/main.1348a3ff.chunk.js.map",
+    "runtime-main.js": "/JuliaGood/face-detection/static/js/runtime-main.8054e91d.js",
+    "runtime-main.js.map": "/JuliaGood/face-detection/static/js/runtime-main.8054e91d.js.map",
+    "static/css/2.6d7c7915.chunk.css": "/JuliaGood/face-detection/static/css/2.6d7c7915.chunk.css",
+    "static/js/2.38990596.chunk.js": "/JuliaGood/face-detection/static/js/2.38990596.chunk.js",
+    "static/js/2.38990596.chunk.js.map": "/JuliaGood/face-detection/static/js/2.38990596.chunk.js.map",
+    "index.html": "/JuliaGood/face-detection/index.html",
+    "static/css/2.6d7c7915.chunk.css.map": "/JuliaGood/face-detection/static/css/2.6d7c7915.chunk.css.map",
+    "static/css/main.05ff9fd3.chunk.css.map": "/JuliaGood/face-detection/static/css/main.05ff9fd3.chunk.css.map",
+    "static/js/2.38990596.chunk.js.LICENSE.txt": "/JuliaGood/face-detection/static/js/2.38990596.chunk.js.LICENSE.txt",
+    "static/media/detect-logo.ff1ff15b.png": "/JuliaGood/face-detection/static/media/detect-logo.ff1ff15b.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.79bb2dd8.js",
+    "static/js/runtime-main.8054e91d.js",
     "static/css/2.6d7c7915.chunk.css",
-    "static/js/2.1695d172.chunk.js",
+    "static/js/2.38990596.chunk.js",
     "static/css/main.05ff9fd3.chunk.css",
     "static/js/main.1348a3ff.chunk.js"
   ]

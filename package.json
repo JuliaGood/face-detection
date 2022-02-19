@@ -2,6 +2,7 @@
   "name": "face-detection",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://github.com/JuliaGood/face-detection",
   "dependencies": {
     "clarifai": "^2.9.1",
     "react": "^17.0.2",
