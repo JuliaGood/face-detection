@@ -48,8 +48,13 @@ class App extends Component {
     const signedInUser = localStorage.getItem("signedInUser");
 
     if (signedInUser && signedInUser.length) {
-      this.setState({ currentUser: {...JSON.parse(signedInUser)}, isUserSignedIn: true });
-      this.onRouteChange("home");
+      const { email, password } = JSON.parse(signedInUser);
+      const foundUser = this.getRegisteredUser().find((user) => email === user.email);
+      
+      if (foundUser && password === foundUser.password) {
+        this.setState({ currentUser: {...foundUser}, isUserSignedIn: true });
+        this.onRouteChange("home");
+      }
     }
   }
 
