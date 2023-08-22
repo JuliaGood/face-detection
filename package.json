@@ -1,7 +1,7 @@
 {
   "name": "face-detection",
   "version": "0.1.0",
-  "homepage": "",
+  "homepage": "/face-detection/",
   "private": true,
   "dependencies": {
     "react": "^17.0.2",
