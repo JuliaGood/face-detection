@@ -7,7 +7,6 @@ import Rank from "./components/rank/Rank";
 import ImageLinkInput from "./components/imageLinkInput/ImageLinkInput";
 import FaceDetection from "./components/faceDetection/FaceDetection";
 import Particles from "react-particles-js";
-import Clarifai from "clarifai";
 
 const particlesOptions = {
   particles: {
@@ -24,9 +23,9 @@ const particlesOptions = {
   },
 };
 
-const app = new Clarifai.App({
-  apiKey: "a57180e7e2914b3586f31b7e92ae4149"
- });
+const clarifaiApiKey = '50fda2d5a7ee460b9b760b9b040ddc41';
+const clarifaiFaceDetectionModelId = 'face-detection';
+const clarifaiFaceDetectioModelVersion = '6dc7e46bc9124c5c8824be4822abe105';
 
 class App extends Component {
   constructor() {
@@ -37,7 +36,7 @@ class App extends Component {
       boxes: [], //point coordinates that we`ve received from response (in the boundingBox)
       route: 'register',
       isUserSignedIn: false,
-      currentUser:{}, //signIned = logged user
+      currentUser: {}, //signIned = logged user
       name: '',
       email: '', //name, email, pasword for FORM-inputs
       password: '',
@@ -45,10 +44,19 @@ class App extends Component {
     }
   }
 
+  componentDidMount = () => {
+    const signedInUser = localStorage.getItem("signedInUser");
+
+    if (signedInUser && signedInUser.length) {
+      this.setState({ currentUser: {...JSON.parse(signedInUser)}, isUserSignedIn: true });
+      this.onRouteChange("home");
+    }
+  }
+
   getRegisteredUser = () => {
-    return localStorage.getItem("registeredUsers") 
-    ? JSON.parse(localStorage.getItem("registeredUsers"))
-    : [];
+    return localStorage.getItem("registeredUsers")
+      ? JSON.parse(localStorage.getItem("registeredUsers"))
+      : [];
   }
 
   calculateFaceLocation = (receivedData) => { //receivedData = that we`ve received from Clarifai`s response: boundingBox for now
@@ -69,18 +77,18 @@ class App extends Component {
   }
 
   displayFaceLocation = (boxesDots) => { // boxesDots = boundingBoxes
-    const updateRegUsers = this.getRegisteredUser().map((user) => { 
+    const updateRegUsers = this.getRegisteredUser().map((user) => {
       if (user.email === this.state.currentUser.email) {
         user.totalCount = user.totalCount + boxesDots.length;
       }
       return user;
     });
-    
-    this.setState((prevState) => ({ 
+
+    this.setState((prevState) => ({
       // prevState = this.state (currentState)
-      boxes: boxesDots, 
+      boxes: boxesDots,
       currentCount: prevState.currentCount + boxesDots.length,
-      currentUser: {...prevState.currentUser, totalCount : prevState.currentUser.totalCount + boxesDots.length}
+      currentUser: { ...prevState.currentUser, totalCount: prevState.currentUser.totalCount + boxesDots.length }
     }), () => {
       localStorage.setItem("registeredUsers", JSON.stringify(updateRegUsers));
     });
@@ -95,20 +103,34 @@ class App extends Component {
   onDetectSubmit = () => {
     console.log("detect btn has cliked");
     this.setState({ imageUrl: this.state.userInput, currentCount: 0 });
-    app.models.predict(
-      Clarifai.FACE_DETECT_MODEL, //As the firts parameter we say it WHAT model do we want to use. Clarifai provides this model. 
-      this.state.userInput) //the second parameter must be img-url
-      // why userInput, not imageUrl? - its because of the way HOW 'setState' works. 
-    .then((response) => {
-      console.log("clarifai`s response: ", response);
-      this.displayFaceLocation(this.calculateFaceLocation(response));
+    fetch(`https://api.clarifai.com/v2/models/${clarifaiFaceDetectionModelId}/versions/${clarifaiFaceDetectioModelVersion}/outputs`, {
+      method: 'POST',
+      body: JSON.stringify({
+        inputs: [{
+          data: {
+            image: {
+              url: this.state.userInput
+            }
+          }
+        }]
+      }),
+      headers: {
+        'Authorization': `Key ${clarifaiApiKey}`,
+        'Content-Type': 'application/json'
+      }
     })
-    .catch ((error) => console.log(error))
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("clarifai`s response: ", data);
+        this.displayFaceLocation(this.calculateFaceLocation(data));
+      })
+      .catch((error) => console.log(error))
   }
 
   onRouteChange = (ourRoute) => {
     if (ourRoute === "signout") {
-      this.setState({ isUserSignedIn: false, imageUrl: '', boxes:[], currentCount: 0 })
+      this.setState({ isUserSignedIn: false, imageUrl: '', boxes: [], currentCount: 0 });
+      localStorage.removeItem("signedInUser");
     } else if (ourRoute === "home") {
       this.setState({ isUserSignedIn: true })
     }
@@ -119,7 +141,7 @@ class App extends Component {
   onInputFormChange = (event) => {
     const inputName = event.target.name; // name, email, password
     const inputValue = event.target.value;
-    this.setState({ [inputName]: inputValue }); 
+    this.setState({ [inputName]: inputValue });
   }
 
   onRegisterSubmit = () => {
@@ -136,18 +158,19 @@ class App extends Component {
     } else if (newUser.name.length < 3 || newUser.email.length < 3 || newUser.password.length < 3) {
       alert("all inputs must have 3 or more characters")
     } else {
-      localStorage.setItem("registeredUsers", JSON.stringify([...registeredUsers, newUser ]))
-      this.setState({ name:'', email:'', password:'' });
+      localStorage.setItem("registeredUsers", JSON.stringify([...registeredUsers, newUser]))
+      this.setState({ name: '', email: '', password: '' });
       this.onRouteChange("signin");
-    }    
+    }
   }
 
   onSigninSubmit = () => {
     const { email, password } = this.state;
     const foundUser = this.getRegisteredUser().find((user) => email === user.email);
     if (foundUser && password === foundUser.password) {
-      this.setState({ currentUser: {...foundUser} }, ()=> {
-        this.setState({ email:'', password:''});
+      this.setState({ currentUser: { ...foundUser } }, () => {
+        localStorage.setItem("signedInUser", JSON.stringify(foundUser));
+        this.setState({ email: '', password: '' });
         this.onRouteChange("home");
       })
     } else {
@@ -159,37 +182,37 @@ class App extends Component {
     return (
       <div className="app">
         <Particles className="particles" params={particlesOptions} />
-        <Navigation 
+        <Navigation
           isUserSignedIn={this.state.isUserSignedIn}
           onRouteChange={this.onRouteChange}
         />
-        { this.state.route === "home" 
+        {this.state.route === "home"
           ? <div>
-              <Rank 
-                currentUser={this.state.currentUser} 
-                currentCount={this.state.currentCount} 
-              />
-              <ImageLinkInput 
-                onInputChange={this.onInputChange}
-                onDetectSubmit={this.onDetectSubmit}
-              />
-              <FaceDetection 
-                imageUrl={this.state.imageUrl}
-                boxes={this.state.boxes}
-              />
-            </div>
-          : ( this.state.route === "signin"
-              ? <SignInForm 
-                onRouteChange={this.onRouteChange}
-                onSigninSubmit={this.onSigninSubmit}
-                onInputFormChange={this.onInputFormChange}
-              /> 
-              : <RegisterForm 
-                onRouteChange={this.onRouteChange} 
-                onRegisterSubmit={this.onRegisterSubmit}
-                onInputFormChange={this.onInputFormChange}
-              />
-            )
+            <Rank
+              currentUser={this.state.currentUser}
+              currentCount={this.state.currentCount}
+            />
+            <ImageLinkInput
+              onInputChange={this.onInputChange}
+              onDetectSubmit={this.onDetectSubmit}
+            />
+            <FaceDetection
+              imageUrl={this.state.imageUrl}
+              boxes={this.state.boxes}
+            />
+          </div>
+          : (this.state.route === "signin"
+            ? <SignInForm
+              onRouteChange={this.onRouteChange}
+              onSigninSubmit={this.onSigninSubmit}
+              onInputFormChange={this.onInputFormChange}
+            />
+            : <RegisterForm
+              onRouteChange={this.onRouteChange}
+              onRegisterSubmit={this.onRegisterSubmit}
+              onInputFormChange={this.onInputFormChange}
+            />
+          )
         }
       </div>
     );
